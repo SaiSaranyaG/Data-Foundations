@@ -1,0 +1,70 @@
+1. Which genre has highest craze among the customers?
+----------------------------------------------------------------------------------------
+Query:
+------
+SELECT
+	Genre.Name AS genretype,
+    	count(Customer.CustomerId) AS customercount
+FROM
+	Customer
+    	JOIN Invoice ON Invoice.CustomerId = Customer.CustomerId
+    	JOIN InvoiceLine ON InvoiceLine.InvoiceId = Invoice.InvoiceId
+	JOIN Track ON Track.TrackId = InvoiceLine.TrackId
+	JOIN Genre ON Genre.GenreId = Track.GenreId
+GROUP BY genretype
+ORDER BY customercount DESC;
+----------------------------------------------------------------------------------------
+
+2. Find out the artist who has written the most rock music from the dataset.
+----------------------------------------------------------------------------------------
+Query:
+------
+SELECT 
+	Artist.ArtistId as artistids,
+	Artist.Name as artistname,
+	count(Track.TrackId) as trackcount
+FROM
+	Artist
+	JOIN Album ON Album.ArtistId = Artist.ArtistId
+	JOIN Track ON Track.AlbumId = Album.AlbumId
+	JOIN Genre ON Genre.GenreId = Track.GenreId
+WHERE Genre.Name = "Rock"
+GROUP BY artistids
+ORDER BY trackcount DESC
+LIMIT 5;
+----------------------------------------------------------------------------------------
+
+3. Which album by Led Zeppelin is highest sold?
+----------------------------------------------------------------------------------------
+Query:
+------
+SELECT 
+	Album.Title as albumname,
+	sum(InvoiceLine.UnitPrice) as soldoutprice
+FROM
+	Album
+	JOIN Artist ON Artist.ArtistId = Album.ArtistId
+	JOIN Track ON Track.AlbumId = Album.AlbumId
+	JOIN InvoiceLine ON InvoiceLine.TrackId = Track.TrackId
+WHERE Artist.Name = "Led Zeppelin"
+GROUP BY albumname
+ORDER BY soldoutprice DESC;
+----------------------------------------------------------------------------------------
+
+4. Total Spent per Country on Rock Music
+----------------------------------------------------------------------------------------
+Query:
+------
+SELECT
+  Customer.Country,
+  Genre.Name,
+  SUM(InvoiceLine.Quantity*InvoiceLine.UnitPrice) AS total_spending
+FROM Customer 
+	JOIN Invoice ON Invoice.CustomerId = Customer.CustomerId
+	JOIN InvoiceLine ON InvoiceLine.InvoiceId = Invoice.InvoiceId
+	JOIN Track ON Track.TrackId = InvoiceLine.TrackId
+	JOIN Genre ON Genre.GenreId = Track.GenreId
+WHERE Genre.Name = "Rock"
+GROUP BY Customer.Country
+ORDER BY total_spending DESC
+LIMIT 5;
